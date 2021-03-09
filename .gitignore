@@ -1,0 +1,10 @@
+# Mac Files
+.DS_Store
+
+# vscode
+__pycache__
+.vscode
+
+# program generated files
+*.csv
+
