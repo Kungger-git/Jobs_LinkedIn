@@ -1,12 +1,11 @@
-import requests, colorama
+import requests, colorama, csv
 from bs4 import BeautifulSoup as soup
 
 
 def write_data(data):
-    title = data[0]
-    location = data[1]
-    with open('jobs.csv', 'a', encoding='utf-8') as f:
-        f.write(f'{title},{location}\n')
+    with open(f'jobs_in_{place}.csv', 'a', encoding='utf-8') as f:
+        write = csv.writer(f)
+        write.writerows([data])
 
 
 def scrape_contents(locator):
@@ -16,15 +15,13 @@ def scrape_contents(locator):
         for title in content.findAll('h1', {'class':'topcard__title'})[0:]:
             print(colorama.Fore.GREEN,
                f'[*] {title.text}', colorama.Style.RESET_ALL)
-            my_data.append(title.text)
+            my_data.append(title.text.replace(',','.'))
         for location in content.findAll('span', {'class':'topcard__flavor topcard__flavor--bullet'})[0:]:
-            print(location.text)
             my_data.append(location.text.replace(',','.'))
 
     # Criteria scraping
-    for criteria in locator.findAll('li', {'class':'job-criteria__item'})[0:]:
-        for criteria_content in criteria.findAll('span', {'class':'job-criteria__text job-criteria__text--criteria'})[0:]:
-            print(criteria_content.text)
+    for criteria in locator.findAll('span', {'class':'job-criteria__text job-criteria__text--criteria'})[:4]:
+        my_data.append(criteria.text)
 
     write_data(my_data)
 
@@ -54,15 +51,15 @@ def extract_jobs(cursor):
     parse_job_page(job_links)
 
 
-def web_parsing():
-    with open('jobs.csv', 'w', encoding='utf-8') as f:
-        headers = 'Job Title, Location, Seniority Level, Employment Type, Job Function, Industries\n'
-        f.write(headers)
-    
-    country = str(input('Enter your country/city: '))
+def web_parsing(location):    
+    with open(f'jobs_in_{location}.csv', 'w', encoding='utf-8') as f:
+        headers = ['Job Title', 'Location', 'Seniority Level',
+                   'Employment Type', 'Job Function', 'Industries']
+        write = csv.writer(f)
+        write.writerow(headers)
     try:
         req = requests.get(
-            f'https://www.linkedin.com/jobs/jobs-in-{country}?trk=homepage-basic_intent-module-jobs&position=1&pageNum=0')
+            f'https://www.linkedin.com/jobs/jobs-in-{location}?trk=homepage-basic_intent-module-jobs&position=1&pageNum=0')
         req.raise_for_status()
 
         # create beautifulsoup
@@ -75,4 +72,6 @@ def web_parsing():
 
 if __name__ == '__main__':
     colorama.init()
-    web_parsing()
+
+    place = str(input('Enter country/city/state: '))
+    web_parsing(place)
