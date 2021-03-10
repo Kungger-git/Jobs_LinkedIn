@@ -1,4 +1,4 @@
-<h1 align="center"> Find LinkedIn Jobs </h1>
+<h1 align="center"> Find Jobs on LinkedIn </h1>
 
 <li>📔 This program finds jobs by scraping on LinkedIn</li>
 <li>👨‍💻 Relies on User Input. Accepts: Country, City, State</li>
