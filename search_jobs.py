@@ -2,6 +2,8 @@ import requests
 import colorama
 import csv
 import os
+import read_data
+import argparse
 from bs4 import BeautifulSoup as soup
 
 
@@ -9,6 +11,7 @@ class Scraper:
 
     def __init__(self, location):
         self.location = location
+
 
     def web_parsing(self):
         try:
@@ -18,7 +21,7 @@ class Scraper:
 
             # create beautifulsoup
             page_soup = soup(req.text, 'html.parser')
-            return extract_jobs(page_soup)
+            return extract_job_links(page_soup)
         except requests.HTTPError as err:
             print(colorama.Fore.RED,
                   f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)
@@ -98,6 +101,8 @@ def scrape_write(links):
             print(colorama.Fore.YELLOW,
                 f'\n\n[!] Written all information in: {csv_filename}',
                 colorama.Style.RESET_ALL)
+        # Reads scraped data
+        read_data.read_scraped(csv_filename)
     except requests.HTTPError as err:
         print(colorama.Fore.RED,
               f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)
@@ -110,7 +115,7 @@ def get_nums(string):
             return num
 
 
-def extract_jobs(cursor):
+def extract_job_links(cursor):
     job_links = []
     for res_card in cursor.findAll("li", {"class": "result-card"})[0:]:
         for links in res_card.findAll('a', {'class': 'result-card__full-card-link'})[0:]:
@@ -121,11 +126,19 @@ def extract_jobs(cursor):
 
 if __name__ == '__main__':
     colorama.init()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     description="Find Nearby or Faraway Jobs")
 
-    place = str(input('Enter country/city/state: '))
+    parser.add_argument("place",
+                        nargs='+', metavar='PLACES',
+                        action="store",
+                        help="Enter country/city/state. One or more places to look jobs from."
+                    )
+    args = parser.parse_args()
 
-    folder_name = f'jobs_in_{place}'
-    if not os.path.exists(folder_name):
-        os.mkdir(folder_name)
+    for place in args.place:
+        folder_name = f'jobs_in_{place}'
 
-    Scraper(place).web_parsing()
+        if not os.path.exists(folder_name):
+            os.mkdir(folder_name)
+        Scraper(place).web_parsing()
