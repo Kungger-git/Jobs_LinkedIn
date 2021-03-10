@@ -100,6 +100,8 @@ def get_nums(string):
     for num in a_list:
         if num.isdigit():
             return num
+        elif num.isdigit() == None:
+            print(True)
 
 
 def extract_jobs(cursor):
