@@ -1,6 +1,7 @@
 import requests
 import colorama
 import csv
+import os
 from bs4 import BeautifulSoup as soup
 
 
@@ -29,7 +30,8 @@ def scrape_write(links):
               f'[!] There are {len(links)} available jobs.\n',
               colorama.Style.RESET_ALL)
 
-        with open(f'jobs_in_{place}.csv', 'w', encoding='utf-8') as f:
+        csv_filename = f'jobs_in_{place}.csv'
+        with open(os.path.join(folder_name, csv_filename), 'w', encoding='utf-8') as f:
             headers = ['Source', 'Organization', 'Job Title', 'Location', 'Posted', 'Applicants Hired', 'Seniority Level',
                        'Employment Type', 'Job Function', 'Industries']
             write = csv.writer(f, dialect='excel')
@@ -43,7 +45,7 @@ def scrape_write(links):
                 job_soup = soup(page_req.text, 'html.parser')
                 my_data = [job_link]
 
-                # Topcard scraping
+                # Topcard scraping                
                 for content in job_soup.findAll('div', {'class': 'topcard__content-left'})[0:]:
                     # Scraping Organization Names
                     orgs = {'Default-Org': [org.text for org in content.findAll('a', {'class': 'topcard__org-name-link topcard__flavor--black-link'})],
@@ -92,6 +94,10 @@ def scrape_write(links):
                     my_data.append(criteria.text)
 
                 write.writerows([my_data])
+            
+            print(colorama.Fore.YELLOW,
+                f'\n\n[!] Written all information in: {csv_filename}',
+                colorama.Style.RESET_ALL)
     except requests.HTTPError as err:
         print(colorama.Fore.RED,
               f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)
@@ -117,4 +123,9 @@ if __name__ == '__main__':
     colorama.init()
 
     place = str(input('Enter country/city/state: '))
+
+    folder_name = f'jobs_in_{place}'
+    if not os.path.exists(folder_name):
+        os.mkdir(folder_name)
+
     Scraper(place).web_parsing()
