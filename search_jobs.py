@@ -4,16 +4,18 @@ import csv
 import os
 import read_data
 import argparse
+import geocoder
+import json
 from bs4 import BeautifulSoup as soup
 
 
-class Scraper:
+class Scrape_Place:
 
     def __init__(self, location):
         self.location = location
 
 
-    def web_parsing(self):
+    def web_parsing_location(self):
         try:
             req = requests.get(
                 f'https://www.linkedin.com/jobs/jobs-in-{self.location}?trk=homepage-basic_intent-module-jobs&position=1&pageNum=0')
@@ -27,10 +29,55 @@ class Scraper:
                   f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)
 
 
+class Scrape_Profession:
+
+    def __init__(self, profession, city):
+        self.profession = profession
+        self.city = city
+        
+
+    def profession_current_location(self):
+        try:
+            req = requests.get(
+                f'https://www.linkedin.com/jobs/search?keywords={self.profession}&location={self.city}&geoId=&trk=homepage-jobseeker_jobs-search-bar_search-submit&redirect=false&position=1&pageNum=0'
+            )
+            req.raise_for_status()
+
+            # create Soup
+            page_soup = soup(req.text, 'html.parser')
+            return extract_job_links(page_soup)
+        except requests.HTTPError as err:
+            print(colorama.Fore.RED,
+                  f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)
+
+
+class Profession_Location:
+
+    def __init__(self, profession, place):
+        self.profession = profession
+        self.place = place
+
+
+    def profession_location(self):
+        try:
+            req = requests.get(
+                f'https://www.linkedin.com/jobs/search?keywords={self.profession}&location={self.place}&geoId=&trk=homepage-jobseeker_jobs-search-bar_search-submit&redirect=false&position=1&pageNum=0'
+            )
+            req.raise_for_status()
+
+            # create Soup
+            page_soup = soup(req.text, 'html.parser')
+            return extract_job_links(page_soup)
+        except requests.HTTPError as err:
+            print(colorama.Fore.RED,
+                  f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)
+
+
+
 def scrape_write(links):
     try:
         print(colorama.Fore.YELLOW,
-              f'[!] There are {len(links)} available jobs.\n',
+              f'[!] There are {len(links)} available jobs in {place.capitalize()}.\n',
               colorama.Style.RESET_ALL)
 
         csv_filename = f'jobs_in_{place}.csv'
@@ -102,7 +149,7 @@ def scrape_write(links):
                 f'\n\n[!] Written all information in: {csv_filename}',
                 colorama.Style.RESET_ALL)
         # Reads scraped data
-        read_data.read_scraped(csv_filename)
+        read_data.read_scraped(folder_name, csv_filename)
     except requests.HTTPError as err:
         print(colorama.Fore.RED,
               f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)
@@ -129,16 +176,55 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description="Find Nearby or Faraway Jobs")
 
-    parser.add_argument("place",
+    parser.add_argument("-p", "--place",
                         nargs='+', metavar='PLACES',
                         action="store",
                         help="Enter country/city/state. One or more places to look jobs from."
                     )
+    
+    parser.add_argument("-j", '--jobfunction',
+                        nargs='+',
+                        metavar='jobfunction',
+                        action='store',
+                        help='Searches Job Specification in your area. (e.g software-engineer)'
+                    )
+
+    parser.add_argument("-jp", '--jobplace',
+                        nargs=2,
+                        metavar=('job', 'place'),
+                        action='store',
+                        help="Searches The Specified Job in the Specified Place. (e.g teacher iowa)"
+                    )
     args = parser.parse_args()
 
-    for place in args.place:
-        folder_name = f'jobs_in_{place}'
+    if args.place:
+        for place in args.place:
+            folder_name = f'jobs_in_{place.capitalize()}'
 
+            if not os.path.exists(folder_name):
+                os.mkdir(folder_name)
+            Scrape_Place(place).web_parsing_location()
+
+    if args.jobfunction:
+        with requests.get('https://ipinfo.io/') as response:
+            source = response.text
+            response.raise_for_status()
+
+        data = json.loads(source)
+        place = json.dumps(data['city']).replace('"', '')
+
+        for job in args.jobfunction:
+            folder_name = f'{job}_jobs_{place.capitalize()}'
+            if not os.path.exists(folder_name):
+                os.mkdir(folder_name)
+            Scrape_Profession(job, place).profession_current_location()
+
+    if args.jobplace:
+        jp = [jp for jp in args.jobplace]
+        job, place = jp[0], jp[1]
+
+        folder_name = f'{job}_jobs_{place.capitalize()}'
         if not os.path.exists(folder_name):
             os.mkdir(folder_name)
-        Scraper(place).web_parsing()
+        
+        Profession_Location(job, place).profession_location()
