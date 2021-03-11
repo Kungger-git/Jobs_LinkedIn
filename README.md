@@ -33,25 +33,45 @@ $ python -m pip install -r requirements.txt
 
 ```console
 $ python search_jobs.py --help
-usage: search_jobs.py [-h] PLACE [PLACES...]
+usage: search_jobs.py [-h] [-p PLACES [PLACES ...]] [-j jobfunction [jobfunction ...]] [-jp job place]
 
 Find Nearby or Faraway Jobs
 
-positional arguments:
-  PLACES       Enter country/city,state. One or more places to look jobs from.
-
 optional arguments:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  -p PLACES [PLACES ...], --place PLACES [PLACES ...]
+                        Enter country/city/state. One or more places to look jobs from.
+  -j jobfunction [jobfunction ...], --jobfunction jobfunction [jobfunction ...]
+                        Searches Job Specification in your area. (e.g software-engineer)
+  -jp job place, --jobplace job place
+                        Searches The Specified Job in the Specified Place. (e.g teacher iowa)
+
 ```
+
 
 To search for only one place:
 ```console
-$ python search_jobs.py san-jose
+$ python search_jobs.py -p san-jose
 ```
 
 To search for more than one place:
 ```
-$ python search_jobs.py california texas arizona
+$ python search_jobs.py -p california texas arizona
+```
+
+To search a Specific job in your area:
+```
+$ python search_jobs.py -j teacher
+```
+
+To search Specific more than one job in your area:
+```
+$ python search_jobs.py -j teacher engineer designer
+```
+
+To search a Specific Job in a Specific Location:
+```
+$ python search_jobs.py -jp designer san-jose
 ```
 
 Data collected will be stored in an individual csv file inside of its respective folder (e.g ```jobs_in_san-jose.csv```)
