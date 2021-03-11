@@ -13,8 +13,8 @@ def read():
                 print(df)
 
 
-def read_scraped(filename):
-    for root, dirs, files in os.walk(os.getcwd()):
+def read_scraped(folder_name, filename):
+    for root, dirs, files in os.walk(f'{os.getcwd()}/{folder_name}'):
         dirs = dirs
         for data in files:
             if filename == data:
