@@ -4,7 +4,6 @@ import csv
 import os
 import read_data
 import argparse
-import geocoder
 import json
 from bs4 import BeautifulSoup as soup
 
