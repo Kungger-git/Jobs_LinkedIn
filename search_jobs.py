@@ -102,7 +102,8 @@ def scrape_write(links):
                             'Flavor-Org': [org.text for org in content.findAll('span', {'class': 'topcard__flavor'})]}
 
                     if orgs['Default-Org'] == []:
-                        my_data.append(orgs['Flavor-Org'][0])
+                        org = orgs['Flavor-Org'][0]
+                        my_data.append(org)
                     else:
                         for org in orgs['Default-Org']:
                             my_data.append(org)
@@ -110,7 +111,8 @@ def scrape_write(links):
                     # Scraping Job Title
                     for title in content.findAll('h1', {'class': 'topcard__title'})[0:]:
                         print(colorama.Fore.GREEN,
-                              f'[*] {title.text}', colorama.Style.RESET_ALL)
+                              f'[*] {title.text}',
+                              colorama.Style.RESET_ALL, colorama.Fore.YELLOW, f'- {org}', colorama.Style.RESET_ALL)
                         my_data.append(title.text.replace(',', '.'))
 
                     for location in content.findAll('span', {'class': 'topcard__flavor topcard__flavor--bullet'})[0:]:
