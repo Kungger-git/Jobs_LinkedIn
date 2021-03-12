@@ -78,3 +78,6 @@ Data collected will be stored in an individual csv file inside of its respective
 
 <h3>Result:<h3/>
 <img src="./img/result_csv.png"/>
+
+## Contributing
+We would love to have you help us with the development of Jobs_LinkedIn. Each and every contribution is greatly valued!
