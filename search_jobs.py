@@ -75,8 +75,14 @@ class Profession_Location:
 
 def scrape_write(links):
     try:
+        if '-' in job:
+            formatting = [x.capitalize() for x in job.split('-')]
+            my_job = ' '.join(formatting)
+        else:
+            my_job = job.capitalize()
+
         print(colorama.Fore.YELLOW,
-              f'[!] There are {len(links)} available jobs in {place.capitalize()}.\n',
+              f'[!] There are {len(links)} available {my_job} jobs in {place.capitalize()}.\n',
               colorama.Style.RESET_ALL)
 
         csv_filename = f'jobs_in_{place}.csv'
