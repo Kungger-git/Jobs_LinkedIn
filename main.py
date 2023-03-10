@@ -1,7 +1,6 @@
-import requests
-import os
+# import os
 import argparse
-import json
+import requests
 
 if __name__ == '__main__':
 
@@ -31,24 +30,20 @@ if __name__ == '__main__':
 
     if args.place:
         place = [args.place]
-        
+
         print(place)
 
 
     if args.jobfunction:
         with requests.get('https://ipinfo.io/', timeout=10) as response:
-            source = response.text
+            place = response.json()['city'].replace('"', '')
             response.raise_for_status()
 
-        data = json.loads(source)
-        place = json.dumps(data['city']).replace('"', '')
         job = [args.jobfunction]
-
-        print(job, '/n', place)
+        print(job, '\n', place)
 
 
     if args.jobplace:
         jp = [args.jobplace]
         job, place = jp[0], jp[1]
-        print(job, '/n', place)
-
+        print(job, '\n', place)
