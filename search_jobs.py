@@ -22,7 +22,8 @@ class Scrape_Place:
 
             # create beautifulsoup
             page_soup = soup(req.text, 'html.parser')
-            return extract_job_links(page_soup)
+            print(colorama.Fore.YELLOW, {page_soup})
+            # return extract_job_links(page_soup)
         except requests.HTTPError as err:
             print(colorama.Fore.RED,
                   f'[!!] Something went wrong! {err}', colorama.Style.RESET_ALL)

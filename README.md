@@ -1,8 +1,8 @@
-<h1 align="center"> Find Jobs on LinkedIn </h1>
+<h1 align="center"> Career Extract API </h1>
 
-<li>📔 This program finds jobs by scraping on LinkedIn</li>
-<li>👨‍💻 Relies on User Input. Accepts: Country, City, State</li>
-<li>📑 Data about jobs will be generated as .csv format. </li>
+<li>📔 This program finds job descriptions by scraping on LinkedIn</li>
+<li>👨‍💻 Relies on User Input. Accepts: job urls</li>
+<li>📑 Data about jobs will be generated as json format. </li>
 
 #
 
@@ -15,14 +15,42 @@ Click Me To See Demo
 
 
 
+Suggested setup
 
 ## Installation:
-```console
-# clone the repo
-$ git clone https://github.com/KungPaoChick/Find_LinkedIn_jobs.git
+- [Virtual Env - venv](https://docs.python.org/3/library/venv.html)
+- Create virtual environment folder
 
-# change the working directory to Find_LinkedIn_jobs
-$ cd Find_LinkedIn_jobs/
+```bash
+python3 -m venv venv
+```
+
+- Activate VENV
+
+```bash
+source venv/bin/activate
+```
+
+- Install packages
+
+```bash
+pip install -r requirements.txt
+```
+
+- Check Packages
+
+```bash
+pip list --local
+```
+
+- Deactivate VENV
+
+```bash
+deactivate
+```
+
+Want to run locally checkout the [Requirements file](requirements.txt)
+
 
 # install the requirements
 $ python -m pip install -r requirements.txt
